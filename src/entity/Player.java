@@ -9,17 +9,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Player extends Entity{
-
     GamePanel gp;
     KeyHandler keyH;
-
     public final int screenX;
     public final int screenY;
-
+    int hasKey = 0;
     public Player(GamePanel gp, KeyHandler keyH){
         this.gp = gp;
         this.keyH = keyH;
-
         screenX = gp.screenWidth/2 - (gp.titleSize/2);
         screenY = gp.screenHeight/2 - (gp.titleSize/2);
         solidArea = new Rectangle(0, 0, gp.titleSize, gp.titleSize);
@@ -29,8 +26,9 @@ public class Player extends Entity{
         solidArea.height = 32;
         setDefaultValues();
         getPlayerImage();
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
     }
-
     public void setDefaultValues(){
         worldX = gp.titleSize * 23;
         worldY = gp.titleSize * 21;
@@ -38,9 +36,7 @@ public class Player extends Entity{
         speed = gp.worldWidth / 600;
         direction = "down";
     }
-
     public void getPlayerImage(){
-
         try{
             up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
             up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
@@ -50,37 +46,31 @@ public class Player extends Entity{
             right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
             left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
             left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
-
         } catch (IOException e){
             e.printStackTrace();
         }
     }
-
     public void update(){
-
         if(keyH.upPressed == true || keyH.downPressed == true || keyH.rightPressed == true || keyH.leftPressed == true){
             if(keyH.upPressed == true){
                 direction = "up";
-
             }
             if(keyH.downPressed == true){
                 direction = "down";
-
             }
             if(keyH.leftPressed == true){
                 direction = "left";
-
             }
             if(keyH.rightPressed == true){
                 direction = "right";
-
             }
-
             //check tile collision
             collisionOn = false;
             gp.cChecker.checkTile(this);
-
-            //if collison is false, player can move
+            //check object collision
+            int objIndex = gp.cChecker.checkObject(this, true);
+            pickUpObject(objIndex);
+            //if collision is false, player can move
             if(collisionOn==false){
                 switch(direction){
                     case "up":
@@ -97,7 +87,6 @@ public class Player extends Entity{
                         break;
                 }
             }
-
             spriteCounter++;
             if(spriteCounter > 10){
                 if(spriteNum == 1){
@@ -106,13 +95,30 @@ public class Player extends Entity{
                 else if(spriteNum == 2){
                     spriteNum = 1;
                 }
-
                 spriteCounter = 0;
             }
         }
-
     }
-
+    public void pickUpObject(int i){
+        if(i != 999){
+            //gp.obj[i] = null;
+            String objName = gp.obj[i].name;
+            switch(objName){
+                case "Key":
+                    hasKey++;
+                    gp.obj[i] = null;
+                    System.out.println("Key:" + hasKey);
+                    break;
+                case "Door":
+                    if(hasKey > 0){
+                        gp.obj[i] = null;
+                        hasKey--;
+                    }
+                    System.out.println("Key:" + hasKey);
+                    break;
+            }
+        }
+    }
     public void draw(Graphics2D g2){
         //g2.setColor(Color.white);
         //g2.fillRect(x, y, gp.titeSize, gp.titeSize);
@@ -152,7 +158,6 @@ public class Player extends Entity{
                 }
                 break;
         }
-
         g2.drawImage(image, screenX, screenY, gp.titleSize, gp.titleSize, null);
 
     }

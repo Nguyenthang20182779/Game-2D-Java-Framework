@@ -1,13 +1,13 @@
 package main;
 
 import entity.Player;
+import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable {
-
     //Screen Setting
     final int originalTitleSize = 16; // 16x16 title
     final int scale = 3;
@@ -16,25 +16,24 @@ public class GamePanel extends JPanel implements Runnable {
     public int maxScreenRow = 12;
     public int screenWidth = titleSize * maxScreenCol; // 768 pixels
     public int screenHeight = titleSize * maxScreenRow; // 576 pixels
-
     KeyHandler keyH = new KeyHandler(this);
     Thread gameThread;
     public Player player = new Player(this, keyH);
     TileManager tileM = new TileManager(this);
     public CollisionChecker cChecker = new CollisionChecker(this);
+    public AssetSetter aSetter = new AssetSetter(this);
+    public SuperObject obj[] = new SuperObject[10];
 
     //FPS
     int FPS = 60;
-
     //set default's player position
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-
     //World setting
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
-    public final int worldWidth = titleSize * maxWorldCol; //40*50=2400
+    public final int worldWidth = titleSize * maxWorldCol; //48*50=2400
     public final int worldHeight = titleSize * maxWorldRow;
 
     public GamePanel(){
@@ -48,6 +47,10 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread(){
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public void setupGame(){
+        aSetter.setObject();
     }
 
     // Delta method
@@ -76,7 +79,6 @@ public class GamePanel extends JPanel implements Runnable {
                 drawCount = 0;
                 timer = 0;
             }
-
         }
     }
 
@@ -87,15 +89,18 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
         tileM.draw(g2);
+        for(int i=0; i<obj.length; i++){
+            if(obj[i] != null){
+                obj[i].draw(g2, this);
+            }
+        }
         player.draw(g2);
-
-
         g2.dispose();
     }
 
-    public void zoomInOut(int i){
+    //Zoom in and zoom out function
+   public void zoomInOut(int i){
         int oldWorldWidth = titleSize * maxWorldCol;  //2400
         titleSize += i;
         int newWorldWidth = titleSize * maxWorldCol; //2350
@@ -107,7 +112,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         double newPlayerWorldX = player.worldX * multiplier;
         double newPlayerWorldY = player.worldY * multiplier;
-
         player.worldX = newPlayerWorldX;
         player.worldY = newPlayerWorldY;
     }

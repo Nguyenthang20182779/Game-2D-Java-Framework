@@ -20,7 +20,7 @@ public class CollisionChecker {
         int titleNum1, titleNum2;
         switch(entity.direction){
             case "up":
-                entityTopRow = (entityTopWorldY - (int) entity.speed)/gp.titleSize;
+                entityTopRow = (entityTopWorldY - (int)entity.speed)/gp.titleSize;
                 titleNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
                 titleNum2 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
                 if(gp.tileM.tile[titleNum1].collision==true || gp.tileM.tile[titleNum2].collision==true){
@@ -28,7 +28,7 @@ public class CollisionChecker {
                 }
                 break;
             case "down":
-                entityBottomRow = (entityBottomWorldY + (int) entity.speed)/gp.titleSize;
+                entityBottomRow = (entityBottomWorldY + (int)entity.speed)/gp.titleSize;
                 titleNum1 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
                 titleNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
                 if(gp.tileM.tile[titleNum1].collision==true || gp.tileM.tile[titleNum2].collision==true){
@@ -36,7 +36,7 @@ public class CollisionChecker {
                 }
                 break;
             case "left":
-                entityLeftCol = (entityLeftWorldX - (int) entity.speed)/gp.titleSize;
+                entityLeftCol = (entityLeftWorldX - (int)entity.speed)/gp.titleSize;
                 titleNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
                 titleNum2 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
                 if(gp.tileM.tile[titleNum1].collision==true || gp.tileM.tile[titleNum2].collision==true){
@@ -44,7 +44,7 @@ public class CollisionChecker {
                 }
                 break;
             case "right":
-                entityRightCol = (entityRightWorldX - (int) entity.speed)/gp.titleSize;
+                entityRightCol = (entityRightWorldX - (int)entity.speed)/gp.titleSize;
                 titleNum1 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
                 titleNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
                 if(gp.tileM.tile[titleNum1].collision==true || gp.tileM.tile[titleNum2].collision==true){
@@ -52,5 +52,83 @@ public class CollisionChecker {
                 }
                 break;
         }
+    }
+    public int checkObject(Entity entity, boolean player){
+        int index = 999;
+        for(int i=0; i<gp.obj.length; i++){
+            if (gp.obj[i] != null) {
+                //Get entity's solid area position
+                entity.solidArea.x = (int)entity.worldX + entity.solidArea.x;
+                entity.solidArea.y = (int)entity.worldY + entity.solidArea.y;
+                //Get the object's solid area position
+                gp.obj[i].solidArea.x = gp.obj[i].worldX + gp.obj[i].solidArea.x;
+                gp.obj[i].solidArea.y = gp.obj[i].worldY + gp.obj[i].solidArea.y;
+
+                switch(entity.direction){
+                    case "up":
+                        entity.solidArea.y -= entity.speed;
+                        if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                            System.out.println("up collision");
+                            if(gp.obj[i].collision == true){
+                                entity.collisionOn = true;
+                            }
+                            if(player == true){
+                                index = i;
+                            }
+                        }
+                        break;
+                    case "down":
+                        entity.solidArea.y += entity.speed;
+                        if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                            System.out.println("down collision");
+                            if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                                System.out.println("up collision");
+                                if(gp.obj[i].collision == true){
+                                    entity.collisionOn = true;
+                                }
+                                if(player == true){
+                                    index = i;
+                                }
+                            }
+                        }
+                        break;
+                    case "left":
+                        entity.solidArea.x -= entity.speed;
+                        if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                            System.out.println("left collision");
+                            if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                                System.out.println("up collision");
+                                if(gp.obj[i].collision == true){
+                                    entity.collisionOn = true;
+                                }
+                                if(player == true){
+                                    index = i;
+                                }
+                            }
+                        }
+                        break;
+                    case "right":
+                        entity.solidArea.x += entity.speed;
+                        if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                            System.out.println("right collision");
+                            if(entity.solidArea.intersects(gp.obj[i].solidArea)){
+                                System.out.println("up collision");
+                                if(gp.obj[i].collision == true){
+                                    entity.collisionOn = true;
+                                }
+                                if(player == true){
+                                    index = i;
+                                }
+                            }
+                        }
+                        break;
+                }
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                gp.obj[i].solidArea.x = gp.obj[i].solidAreaDefaultX;
+                gp.obj[i].solidArea.y = gp.obj[i].solidAreaDefaultY;
+            }
+        }
+        return index;
     }
 }
