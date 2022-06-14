@@ -4,18 +4,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
-
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     GamePanel gp;
+    boolean checkDrawTime = false;
     public KeyHandler(GamePanel gp){
         this.gp = gp;
     }
-
     @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-
+    public void keyTyped(KeyEvent e) {}
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
@@ -37,8 +33,16 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_DOWN){
             gp.zoomInOut(-1);
         }
+        //Debug
+        if(code == KeyEvent.VK_T){
+            if(checkDrawTime == false){
+                checkDrawTime = true;
+            }
+            else if(checkDrawTime == true){
+                checkDrawTime = false;
+            }
+        }
     }
-
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
