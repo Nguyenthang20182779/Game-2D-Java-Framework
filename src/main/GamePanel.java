@@ -17,32 +17,36 @@ public class GamePanel extends JPanel implements Runnable {
     public int maxScreenRow = 12;
     public int screenWidth = titleSize * maxScreenCol; // 768 pixels
     public int screenHeight = titleSize * maxScreenRow; // 576 pixels
-    KeyHandler keyH = new KeyHandler(this);
+    //World setting
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = titleSize * maxWorldCol; //48*50=2400
+    public final int worldHeight = titleSize * maxWorldRow;
+    //System
     Thread gameThread;
-    public Player player = new Player(this, keyH);
+    KeyHandler keyH = new KeyHandler(this);
     TileManager tileM = new TileManager(this);
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
-    public SuperObject obj[] = new SuperObject[10];
-    public Entity npc[] = new Entity[10];
     Sound music = new Sound();
     Sound se = new Sound();
     public UI ui = new UI(this);
+    //Entity and Object
+    public Player player = new Player(this, keyH);
+    public SuperObject obj[] = new SuperObject[10];
+    public Entity npc[] = new Entity[10];
     //FPS
     int FPS = 60;
     //set default's player position
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-    //World setting
-    public final int maxWorldCol = 50;
-    public final int maxWorldRow = 50;
-    public final int worldWidth = titleSize * maxWorldCol; //48*50=2400
-    public final int worldHeight = titleSize * maxWorldRow;
     //Game state
     public int gameState;
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int dialougeState = 3;
+
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
@@ -60,32 +64,6 @@ public class GamePanel extends JPanel implements Runnable {
         playMusic(0);
         stopMusic();
         gameState = playState;
-    }
-    // Delta method
-    public void run(){
-        double drawInterval = 1000000000 / FPS;  // 0.0166666667 seconds
-        double delta = 0;
-        long lastTime = System.nanoTime();
-        long currentTime;
-        long timer = 0;
-        int drawCount = 0;
-        while (gameThread != null){
-            currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
-            lastTime = currentTime;
-            if(delta >= 1){
-                update();
-                repaint();
-                delta--;
-                drawCount++;
-            }
-            if(timer >= 1000000000){
-                System.out.println("FPS: " + drawCount);
-                drawCount = 0;
-                timer = 0;
-            }
-        }
     }
     public void update(){
         if(gameState == playState){
@@ -164,6 +142,32 @@ public class GamePanel extends JPanel implements Runnable {
     public void playSE(int i){
         se.setFile(i);
         se.play();
+    }
+    // Delta method
+    public void run(){
+        double drawInterval = 1000000000 / FPS;  // 0.0166666667 seconds
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+        long timer = 0;
+        int drawCount = 0;
+        while (gameThread != null){
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            timer += (currentTime - lastTime);
+            lastTime = currentTime;
+            if(delta >= 1){
+                update();
+                repaint();
+                delta--;
+                drawCount++;
+            }
+            if(timer >= 1000000000){
+                System.out.println("FPS: " + drawCount);
+                drawCount = 0;
+                timer = 0;
+            }
+        }
     }
     // Sleep method
 /*    @Override
