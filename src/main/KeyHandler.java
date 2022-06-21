@@ -30,7 +30,7 @@ public class KeyHandler implements KeyListener {
        if(code == KeyEvent.VK_UP){
             gp.zoomInOut(1);
         }
-        if(code == KeyEvent.VK_DOWN){
+       if(code == KeyEvent.VK_DOWN){
             gp.zoomInOut(-1);
         }
         //Debug
@@ -40,6 +40,14 @@ public class KeyHandler implements KeyListener {
             }
             else if(checkDrawTime == true){
                 checkDrawTime = false;
+            }
+        }
+        if(code == KeyEvent.VK_P){
+            if(gp.gameState == gp.playState){
+                gp.gameState = gp.pauseState;
+            }
+            else if(gp.gameState == gp.pauseState){
+                gp.gameState = gp.playState;
             }
         }
     }
