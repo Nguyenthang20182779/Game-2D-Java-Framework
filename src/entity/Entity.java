@@ -7,6 +7,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Entity {
+    GamePanel gp;
+    String dialouges[] = new String[20];
+    int dialougeIndex = 0;
     public double worldX, worldY;
     public double speed;
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
@@ -17,13 +20,34 @@ public class Entity {
     public boolean collisionOn = false;
     public int solidAreaDefaultX, solidAreaDefaultY;
     public int actionLockCounter = 0;
-    GamePanel gp;
+    public int maxLife;
+    public int life;
+
     public Entity(GamePanel gp){
         this.gp = gp;
     }
-    public void setAction(){
-
+    public void speak(){
+        if(dialouges[dialougeIndex] == null){
+            dialougeIndex = 0;
+        }
+        gp.ui.currentDialouge = dialouges[dialougeIndex];
+        dialougeIndex++;
+        switch (gp.player.direction){
+            case "up":
+                direction = "down";
+                break;
+            case "down":
+                direction = "up";
+                break;
+            case "right":
+                direction = "left";
+                break;
+            case "left":
+                direction = "right";
+                break;
+        }
     }
+    public void setAction(){}
     public void update(){
         setAction();
         collisionOn = false;

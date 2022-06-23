@@ -36,6 +36,8 @@ public class Player extends Entity{
         speed = 4;
         speed = gp.worldWidth / 600;
         direction = "down";
+        maxLife = 6;
+        life = maxLife;
     }
     public void getPlayerImage(){
     /*    try{
@@ -73,15 +75,18 @@ public class Player extends Entity{
             if(keyH.rightPressed == true){
                 direction = "right";
             }
-            //check tile collision
+            //Check tile collision
             collisionOn = false;
             gp.cChecker.checkTile(this);
-            //check object collision
+            //Check object collision
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
-            //check npc collision
+            //Check npc collision
             int npcIndex = gp.cChecker.checkEntity(this, gp.npc);
             interactNPC(npcIndex);
+            //Check event
+            gp.eHandler.checkEvent();
+            //gp.keyH.enterPressed = false;
 
             //if collision is false, player can move
             if(collisionOn==false){
@@ -114,7 +119,6 @@ public class Player extends Entity{
     }
     public void pickUpObject(int i){
         if(i != 999){
-
             //gp.obj[i] = null;
             String objName = gp.obj[i].name;
             switch(objName){
@@ -154,6 +158,12 @@ public class Player extends Entity{
     public void interactNPC(int i){
         if(i != 999){
             System.out.println("You are hitting an npc!");
+            /*if(gp.keyH.enterPressed == true){
+                gp.gameState = gp.dialougeState;
+                gp.npc[i].speak();
+            }*/
+            gp.gameState = gp.dialougeState;
+            gp.npc[i].speak();
         }
     }
     public void draw(Graphics2D g2){
@@ -195,7 +205,7 @@ public class Player extends Entity{
                 break;
         }
         g2.drawImage(image, screenX, screenY, gp.titleSize, gp.titleSize, null);
-        g2.setColor(Color.red);
-        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+        //g2.setColor(Color.red);
+        //g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
 }
